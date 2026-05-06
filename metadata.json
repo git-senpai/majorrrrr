@@ -1,0 +1,11 @@
+{
+  "name": "Remix: AI Crowd Intelligence",
+  "description": "Smart location-based crowd analysis and visualization system using Gemini AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "AI-powered location context detection",
+    "Predictive crowd level modeling",
+    "Dynamic SVG map visualization",
+    "Real-time status simulations"
+  ]
+}
