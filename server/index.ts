@@ -2,6 +2,11 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import Twilio from 'twilio';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = Number(process.env.PORT ?? 3001);
 
@@ -56,6 +61,13 @@ app.post('/api/notify', async (req, res) => {
       details: err?.message ?? String(err),
     });
   }
+});
+
+// Serve frontend in production
+app.use(express.static(path.join(__dirname, '../dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 app.listen(PORT, () => {
