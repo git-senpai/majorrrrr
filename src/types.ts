@@ -36,3 +36,8 @@ export interface RecentSearch {
   location: string;
   timestamp: number;
 }
+
+export interface RecentSearch {
+  location: string;
+  timestamp: number;
+}

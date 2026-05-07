@@ -70,7 +70,6 @@ export const LocationSearch: React.FC<LocationSearchProps> = ({ onSearch, isLoad
           )}
         </button>
       </div>
-
     </form>
   );
 };
