@@ -32,7 +32,7 @@ export function DetailedAnalysis({ data }: { data: LocationData }) {
     setSending(true);
     setSendResult(null);
     try {
-      const response = await fetch('http://localhost:5000/api/send-whatsapp', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/send-whatsapp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
