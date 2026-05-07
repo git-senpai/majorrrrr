@@ -5,13 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:server": "tsx server/index.ts",
-    "dev:all": "npx concurrently -k \"npm run dev:server\" \"npm run dev\"",
     "build": "vite build",
-    "start": "tsx server/index.ts",
+    "server": "node backend/server.js",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "server": "node backend/server.js"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
@@ -24,7 +23,9 @@
     "motion": "^12.23.24",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
-    "twilio": "^5.8.0",
+    "react-is": "^19.2.6",
+    "recharts": "^3.8.1",
+    "twilio": "^6.0.1",
     "vite": "^6.2.3"
   },
   "devDependencies": {

@@ -24,6 +24,7 @@ import { LocationData, Zone, CrowdLevel, RecentSearch } from './types';
 import { analyzeLocation } from './services/geminiService';
 import { LocationSearch } from './components/LocationSearch';
 import { CrowdMap } from './components/CrowdMap';
+import { DetailedAnalysis } from './components/DetailedAnalysis';
 import { RecentSearches } from './components/RecentSearches';
 import { LiveFeed } from './components/LiveFeed';
 import { Chatbot } from './components/Chatbot';
@@ -111,7 +112,7 @@ export default function App() {
       const message =
         `Hi from CrowdWatcher! You will get updates if the crowd changes near "${data?.location ?? 'your location'}".`;
 
-      const resp = await fetch('/api/notify', {
+      const resp = await fetch('http://localhost:5000/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to, message }),
@@ -400,6 +401,9 @@ export default function App() {
                   <LiveFeed data={data} />
                 </div>
               </div>
+
+              {/* Detailed Temporal Analysis & Communication */}
+              <DetailedAnalysis data={data} />
             </motion.div>
           )}
         </AnimatePresence>

@@ -14,6 +14,13 @@ export interface Zone {
   y: number; // 0-100 for SVG positioning
 }
 
+export interface DetailedGraphData {
+  timeLabels: string[];
+  crowdDensity: number[];
+  movementSpeed: number[];
+  riskFactor: number[];
+}
+
 export interface LocationData {
   location: string;
   type: string;
@@ -22,6 +29,12 @@ export interface LocationData {
   capacityPercentage: number;
   riskIndex: number;
   zones: Zone[];
+  detailedGraphs?: DetailedGraphData;
+}
+
+export interface RecentSearch {
+  location: string;
+  timestamp: number;
 }
 
 export interface RecentSearch {

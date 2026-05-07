@@ -20,6 +20,11 @@ export async function analyzeLocation(location: string, time: string): Promise<L
   5. Provide an overall capacityPercentage (0-100) indicating how full the location is.
   6. Provide a riskIndex (1-10) indicating potential hazards (crush risk, slow evacuation).
   7. Provide a brief summary of the overall atmosphere.
+  8. Provide 'detailedGraphs' data containing 4 arrays:
+     - timeLabels: 5 strings representing time periods (e.g. ['T-2h', 'T-1h', 'Now', 'T+1h', 'T+2h']) based on the input Time.
+     - crowdDensity: 5 numbers (0-100) representing crowd density at those times.
+     - movementSpeed: 5 numbers (0-100) representing average movement speed at those times.
+     - riskFactor: 5 numbers (0-100) representing risk factor at those times.
   
   Realistic behavior:
   - India Gate (Evening) -> High/Very High (capacity 85%, risk 7)
@@ -60,6 +65,15 @@ export async function analyzeLocation(location: string, time: string): Promise<L
                 y: { type: Type.NUMBER }
               },
               required: ["id", "name", "crowd", "x", "y"]
+            }
+          },
+          detailedGraphs: {
+            type: Type.OBJECT,
+            properties: {
+              timeLabels: { type: Type.ARRAY, items: { type: Type.STRING } },
+              crowdDensity: { type: Type.ARRAY, items: { type: Type.NUMBER } },
+              movementSpeed: { type: Type.ARRAY, items: { type: Type.NUMBER } },
+              riskFactor: { type: Type.ARRAY, items: { type: Type.NUMBER } }
             }
           }
         },
