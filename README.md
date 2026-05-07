@@ -1,72 +1,94 @@
-# CrowdWatcher
+# CrowdWatcher: Intelligent Crowd Sourced Management System
 
-CrowdWatcher is a Vite + React app that uses Gemini to generate crowd/zone analysis for any location and can send **SMS notifications** via **Twilio**.
+CrowdWatcher is a high-performance, AI-driven crowd management platform that leverages **Google Gemini AI** for real-time predictive modeling and **Twilio** for multi-channel alerting (WhatsApp & SMS).
 
-## Prerequisites
+## 🚀 Key Features
 
-- Node.js (recommended: 18+)
-- A Gemini API key
-- A Twilio account (trial works)
+- **AI Predictive Modeling**: Generates 24-hour crowd density forecasts using Gemini-1.5-Flash.
+- **Dynamic Visualizations**: High-fidelity charts for movement speed, risk factors, and density over time.
+- **Multi-Channel Alerts**: 
+  - **WhatsApp**: Detailed temporal analysis reports sent via Twilio WhatsApp API.
+  - **SMS**: Instant emergency broadcast notifications.
+- **Interactive Crowd Maps**: Zone-based telemetry with risk indicators and zone-specific descriptions.
+- **Intelligent Assistant**: Context-aware AI chatbot to answer safety and logistics queries.
 
-## Setup
+## 🛠️ Tech Stack
 
-1) Install dependencies
+- **Frontend**: React 19, TypeScript, Vite, Recharts, Lucide-React, Framer Motion.
+- **Backend**: Node.js, Express, Twilio SDK, Dotenv.
+- **AI**: Google Generative AI (Gemini).
+
+## 📂 Project Structure
+
+- `/src`: Frontend React application.
+- `/backend`: Node.js Express server for Twilio integrations.
+
+## ⚙️ Setup & Configuration
+
+### 1. Installation
+
+Install dependencies for both the root project and the backend:
 
 ```bash
+# Root dependencies
 npm install
+
+# Backend dependencies
+cd backend && npm install
+cd ..
 ```
 
-2) Configure environment variables
+### 2. Environment Variables
 
-Copy `.env.example` to `.env` (or edit your existing `.env`) and fill:
+Create the following files and fill in your credentials:
 
-- **Gemini**
-  - `GEMINI_API_KEY`
-- **Twilio (SMS)**
-  - `TWILIO_ACCOUNT_SID` (Live SID, starts with `AC...`)
-  - `TWILIO_AUTH_TOKEN` (Live token)
-  - `TWILIO_FROM_NUMBER` (your Twilio phone number, e.g. `+18166407709`)
-  - `APP_NAME` (optional)
-
-## Running locally
-
-This project runs:
-- Frontend (Vite): `http://localhost:3000`
-- Backend (Express API for Twilio): `http://localhost:3001`
-
-Start the backend (Terminal 1):
-
-```bash
-npm run dev:server
+#### **Root Directory (`.env.local`)**
+```env
+GEMINI_API_KEY=your_gemini_api_key
+VITE_BACKEND_URL=http://localhost:5000
 ```
 
-Start the frontend (Terminal 2):
+#### **Backend Directory (`backend/.env`)**
+```env
+# WhatsApp Configuration (Sandbox)
+WHATSAPP_ACCOUNT_SID=your_whatsapp_sid
+WHATSAPP_AUTH_TOKEN=your_whatsapp_token
+WHATSAPP_FROM_NUMBER=+14155238886
 
+# SMS Configuration (Live)
+SMS_ACCOUNT_SID=your_sms_sid
+SMS_AUTH_TOKEN=your_sms_token
+SMS_FROM_NUMBER=your_twilio_phone_number
+
+APP_NAME=CrowdWatcher
+```
+
+## 🏃 Running the Application
+
+You need to run both the frontend and the backend simultaneously.
+
+### Terminal 1: Backend
 ```bash
+cd backend
 npm run dev
 ```
 
-## Using SMS notifications (Twilio)
+### Terminal 2: Frontend
+```bash
+npm run dev
+```
+The application will be available at `http://localhost:3000`.
 
-In the UI, click **Get notification**, enter a phone number, and click **Send**.
+## 📱 WhatsApp Sandbox Setup
 
-- You can enter either:
-  - `9301506130` (auto-converted to `+919301506130`)
-  - `+919301506130` (E.164 format)
+To receive WhatsApp alerts during development:
+1. Send a WhatsApp message to `+1 415 523 8886` with the code provided in your Twilio Sandbox Console (e.g., `join smooth-apple`).
+2. Once you receive the "You are all set!" reply, you can send alerts from the dashboard.
 
-### Twilio Trial Account Notes
+## 📡 API Endpoints (Backend)
 
-On a Twilio trial account, you can only send SMS to **verified** recipient numbers.
+- `POST /api/send-whatsapp`: Sends detailed crowd analysis reports.
+- `POST /api/notify`: Sends quick SMS notifications.
 
-1) Verify your personal number in Twilio:
-- Twilio Console → Phone Numbers → Manage → **Verified Caller IDs**
-
-2) If sending to India (`+91`), you may need to enable Geo Permissions:
-- Twilio Console → Messaging → Settings → **Geo Permissions** → enable **India (SMS)**
-
-## API endpoints
-
-- `GET /api/health` (backend health check)
-- `POST /api/notify`
-  - Body: `{ "to": "+91xxxxxxxxxx", "message": "..." }`
-  - If `message` is omitted, a default message is used.
+---
+Built with ❤️ for a safer, smarter world.
