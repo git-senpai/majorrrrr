@@ -14,10 +14,18 @@ export interface Zone {
   y: number; // 0-100 for SVG positioning
 }
 
+export interface DetailedGraphData {
+  timeLabels: string[];
+  crowdDensity: number[];
+  movementSpeed: number[];
+  riskFactor: number[];
+}
+
 export interface LocationData {
   location: string;
   type: string;
   time: string;
   summary: string;
   zones: Zone[];
+  detailedGraphs?: DetailedGraphData;
 }

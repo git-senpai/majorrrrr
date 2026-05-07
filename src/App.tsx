@@ -21,6 +21,7 @@ import { LocationData, Zone, CrowdLevel } from './types';
 import { analyzeLocation } from './services/geminiService';
 import { LocationSearch } from './components/LocationSearch';
 import { CrowdMap } from './components/CrowdMap';
+import { DetailedAnalysis } from './components/DetailedAnalysis';
 
 const getCrowdLabel = (level: CrowdLevel) => {
   return level.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
@@ -52,12 +53,13 @@ export default function App() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleSearch = async (location: string) => {
+  const handleSearch = async (location: string, time?: string) => {
     setLoading(true);
     setError(null);
     setSelectedZone(null);
     try {
-      const result = await analyzeLocation(location, currentTime);
+      const searchTime = time || currentTime;
+      const result = await analyzeLocation(location, searchTime);
       setData(result);
     } catch (err) {
       setError('AI analysis failed. Please check your connection and try again.');
@@ -266,6 +268,9 @@ export default function App() {
                   </AnimatePresence>
                 </div>
               </div>
+
+              {/* Detailed Temporal Analysis & Communication */}
+              <DetailedAnalysis data={data} />
             </motion.div>
           )}
         </AnimatePresence>

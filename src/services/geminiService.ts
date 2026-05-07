@@ -18,6 +18,11 @@ export async function analyzeLocation(location: string, time: string): Promise<L
   3. Assign realistic crowd levels based on the time and location type.
   4. Provide X and Y coordinates (0-100 scale) for each zone to be plotted on a map.
   5. Provide a brief summary of the overall atmosphere.
+  6. Provide 'detailedGraphs' data containing 4 arrays:
+     - timeLabels: 5 strings representing time periods (e.g. ['T-2h', 'T-1h', 'Now', 'T+1h', 'T+2h']) based on the input Time.
+     - crowdDensity: 5 numbers (0-100) representing crowd density at those times.
+     - movementSpeed: 5 numbers (0-100) representing average movement speed at those times.
+     - riskFactor: 5 numbers (0-100) representing risk factor at those times.
   
   Realistic behavior:
   - India Gate (Evening) -> High/Very High
@@ -56,6 +61,15 @@ export async function analyzeLocation(location: string, time: string): Promise<L
                 y: { type: Type.NUMBER }
               },
               required: ["id", "name", "crowd", "x", "y"]
+            }
+          },
+          detailedGraphs: {
+            type: Type.OBJECT,
+            properties: {
+              timeLabels: { type: Type.ARRAY, items: { type: Type.STRING } },
+              crowdDensity: { type: Type.ARRAY, items: { type: Type.NUMBER } },
+              movementSpeed: { type: Type.ARRAY, items: { type: Type.NUMBER } },
+              riskFactor: { type: Type.ARRAY, items: { type: Type.NUMBER } }
             }
           }
         },
