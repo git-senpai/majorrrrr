@@ -80,7 +80,7 @@ export async function analyzeLocation(location: string, time: string): Promise<L
 export async function chatWithAssistant(query: string, context: LocationData | null): Promise<string> {
   const systemPrompt = `You are the CrowdWatcher AI Assistant. 
 You help users understand crowding, safety, and logistics for various locations.
-Keep your answers concise, helpful, and formatted in short paragraphs or bullet points.
+CRITICAL INSTRUCTION: Your answers must be EXTREMELY short, crisp, and to the point. Maximum 1-2 sentences. Do not use long paragraphs or fluff. Use emojis sparingly.
 
 ${context ? `Current Location Context:
 - Location: ${context.location} (${context.type})
