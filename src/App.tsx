@@ -20,10 +20,13 @@ import {
   Phone,
   Send
 } from 'lucide-react';
-import { LocationData, Zone, CrowdLevel } from './types';
+import { LocationData, Zone, CrowdLevel, RecentSearch } from './types';
 import { analyzeLocation } from './services/geminiService';
 import { LocationSearch } from './components/LocationSearch';
 import { CrowdMap } from './components/CrowdMap';
+import { RecentSearches } from './components/RecentSearches';
+import { LiveFeed } from './components/LiveFeed';
+import { Chatbot } from './components/Chatbot';
 
 const getCrowdLabel = (level: CrowdLevel) => {
   return level.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
@@ -46,6 +49,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
+  const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [notifyPhone, setNotifyPhone] = useState('');
@@ -53,21 +57,44 @@ export default function App() {
   const [notifyStatus, setNotifyStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
+    const saved = localStorage.getItem('crowdwatcher_recent_searches');
+    if (saved) {
+      try {
+        setRecentSearches(JSON.parse(saved));
+      } catch (e) {}
+    }
+
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     }, 60000);
     return () => clearInterval(timer);
   }, []);
 
-  const handleSearch = async (location: string) => {
+  const handleSearch = async (location: string, timeOffsetHours: number = 0) => {
     setLoading(true);
     setError(null);
     setNotifyStatus(null);
     setSelectedZone(null);
     try {
-      const result = await analyzeLocation(location, currentTime);
+      let analysisTime = currentTime;
+      if (timeOffsetHours > 0) {
+        const futureDate = new Date();
+        futureDate.setHours(futureDate.getHours() + timeOffsetHours);
+        analysisTime = futureDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+      
+      const result = await analyzeLocation(location, analysisTime);
       setData(result);
+      
+      const newSearch = { location, timestamp: Date.now() };
+      setRecentSearches(prev => {
+        const filtered = prev.filter(s => s.location.toLowerCase() !== location.toLowerCase());
+        const updated = [newSearch, ...filtered].slice(0, 5);
+        localStorage.setItem('crowdwatcher_recent_searches', JSON.stringify(updated));
+        return updated;
+      });
     } catch (err) {
+      console.error(err);
       setError('AI analysis failed. Please check your connection and try again.');
     } finally {
       setLoading(false);
@@ -148,7 +175,6 @@ export default function App() {
               Real-time crowd predictive modeling and spatial analysis. Enter any location to begin telemetry synchronization.
             </p>
             <LocationSearch onSearch={handleSearch} isLoading={loading} />
-
             <div className="mt-6 flex flex-col items-center gap-3">
               <button
                 type="button"
@@ -211,6 +237,8 @@ export default function App() {
                 )}
               </AnimatePresence>
             </div>
+            
+            <RecentSearches searches={recentSearches} onSelect={(loc) => handleSearch(loc, 0)} />
           </motion.div>
         </div>
 
@@ -266,12 +294,12 @@ export default function App() {
                     <StatCard 
                       icon={TrendingUp} 
                       label="Capacity" 
-                      value={`${Math.floor(Math.random() * 40 + 60)}%`} 
+                      value={`${data.capacityPercentage}%`} 
                     />
                     <StatCard 
                       icon={TrendingDown} 
                       label="Risk Index" 
-                      value="Low-Mid" 
+                      value={`${data.riskIndex}/10`} 
                     />
                     <StatCard 
                       icon={Info} 
@@ -367,6 +395,9 @@ export default function App() {
                       </div>
                     )}
                   </AnimatePresence>
+
+                  {/* Live Feed Simulator */}
+                  <LiveFeed data={data} />
                 </div>
               </div>
             </motion.div>
@@ -387,6 +418,9 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Chatbot Widget */}
+      <Chatbot data={data} />
     </div>
   );
 }

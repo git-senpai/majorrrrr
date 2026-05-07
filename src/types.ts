@@ -19,5 +19,12 @@ export interface LocationData {
   type: string;
   time: string;
   summary: string;
+  capacityPercentage: number;
+  riskIndex: number;
   zones: Zone[];
+}
+
+export interface RecentSearch {
+  location: string;
+  timestamp: number;
 }
