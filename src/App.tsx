@@ -112,7 +112,7 @@ export default function App() {
       const message =
         `Hi from CrowdWatcher! You will get updates if the crowd changes near "${data?.location ?? 'your location'}".`;
 
-      const resp = await fetch('http://localhost:5000/api/notify', {
+      const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to, message }),
