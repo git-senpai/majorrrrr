@@ -76,7 +76,7 @@ export default function App() {
               <Users className="text-black w-5 h-5" />
             </div>
             <h1 className="font-mono text-sm tracking-tighter uppercase font-bold flex items-center gap-2">
-              CrowdWatcher
+              CROWD SOURCED MANAGEMENT SYSTEM
               <span className="hidden sm:inline opacity-30"> v1.0.4 AI-OS</span>
             </h1>
           </div>
@@ -100,9 +100,9 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 leading-[0.9]">
-              Intelligence for <br/>
-              <span className="text-neutral-500">Every Square Meter</span>
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-[1.1]">
+              AN INTELLIGENT ONLINE <br/>
+              <span className="text-neutral-500">CROWD SOURCED MANAGEMENT SYSTEM</span>
             </h2>
             <p className="text-neutral-400 text-lg mb-8 max-w-xl mx-auto">
               Real-time crowd predictive modeling and spatial analysis. Enter any location to begin telemetry synchronization.
@@ -275,7 +275,7 @@ export default function App() {
       <footer className="py-8 border-t border-neutral-900 bg-black/50 mt-12">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-neutral-600 text-xs font-mono uppercase tracking-[0.2em]">
-            © 2026 CrowdWatcher Spatial Intelligence
+            © 2026 CROWD SOURCED MANAGEMENT SYSTEM
           </div>
           <div className="flex gap-6">
             <FooterLink label="Telemetry" />
