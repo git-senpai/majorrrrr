@@ -15,7 +15,10 @@ import {
   ArrowRight,
   TrendingDown,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  Bell,
+  Phone,
+  Send
 } from 'lucide-react';
 import { LocationData, Zone, CrowdLevel } from './types';
 import { analyzeLocation } from './services/geminiService';
@@ -44,6 +47,10 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  const [notifyOpen, setNotifyOpen] = useState(false);
+  const [notifyPhone, setNotifyPhone] = useState('');
+  const [notifySending, setNotifySending] = useState(false);
+  const [notifyStatus, setNotifyStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -55,6 +62,7 @@ export default function App() {
   const handleSearch = async (location: string) => {
     setLoading(true);
     setError(null);
+    setNotifyStatus(null);
     setSelectedZone(null);
     try {
       const result = await analyzeLocation(location, currentTime);
@@ -63,6 +71,38 @@ export default function App() {
       setError('AI analysis failed. Please check your connection and try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSendNotification = async () => {
+    const to = normalizePhone(notifyPhone);
+    if (!to || notifySending) return;
+
+    setNotifySending(true);
+    setNotifyStatus(null);
+    try {
+      const message =
+        `Hi from CrowdWatcher! You will get updates if the crowd changes near "${data?.location ?? 'your location'}".`;
+
+      const resp = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, message }),
+      });
+
+      const payload = await resp.json().catch(() => ({}));
+      if (!resp.ok) {
+        throw new Error(payload?.details || payload?.error || `Request failed (${resp.status})`);
+      }
+
+      setNotifyStatus({ type: 'success', text: 'SMS sent. Check your phone.' });
+    } catch (e: any) {
+      setNotifyStatus({
+        type: 'error',
+        text: e?.message || 'Failed to send SMS. Please try again.',
+      });
+    } finally {
+      setNotifySending(false);
     }
   };
 
@@ -108,6 +148,69 @@ export default function App() {
               Real-time crowd predictive modeling and spatial analysis. Enter any location to begin telemetry synchronization.
             </p>
             <LocationSearch onSearch={handleSearch} isLoading={loading} />
+
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setNotifyOpen(v => !v)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-800 bg-neutral-950/60 hover:bg-neutral-900 transition-colors text-sm font-medium"
+              >
+                <Bell className="w-4 h-4 text-neutral-300" />
+                Get notification
+              </button>
+
+              <AnimatePresence initial={false}>
+                {notifyOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    className="w-full max-w-xl mx-auto"
+                  >
+                    <div className="p-4 rounded-2xl border border-neutral-800 bg-neutral-950/60 backdrop-blur-md">
+                      <div className="flex items-center gap-2 text-xs font-mono text-neutral-500 uppercase tracking-widest mb-3">
+                        <Phone className="w-3.5 h-3.5" />
+                        SMS notifications
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <input
+                          value={notifyPhone}
+                          onChange={(e) => setNotifyPhone(e.target.value)}
+                          placeholder='Enter phone number (e.g., 9301506130 or +919301506130)'
+                          className="flex-1 bg-neutral-900 border border-neutral-800 text-white rounded-xl py-3 px-4 focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-neutral-600 transition-all placeholder:text-neutral-600"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleSendNotification}
+                          disabled={notifySending || !notifyPhone.trim()}
+                          className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white text-black font-medium hover:bg-neutral-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        >
+                          <Send className="w-4 h-4" />
+                          {notifySending ? 'Sending...' : 'Send'}
+                        </button>
+                      </div>
+
+                      {notifyStatus && (
+                        <div
+                          className={`mt-3 text-sm rounded-xl px-3 py-2 border ${
+                            notifyStatus.type === 'success'
+                              ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                              : 'bg-red-500/10 border-red-500/20 text-red-400'
+                          }`}
+                        >
+                          {notifyStatus.text}
+                        </div>
+                      )}
+
+                      <p className="mt-3 text-xs text-neutral-500">
+                        Tip: Use international format with country code (like <span className="font-mono">+91</span>).
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </motion.div>
         </div>
 
@@ -330,4 +433,17 @@ function getCrowdPercent(level: CrowdLevel) {
     case 'closed': return '0%';
     default: return '10%';
   }
+}
+
+function normalizePhone(input: string) {
+  const raw = input.trim().replace(/[^\d+]/g, '');
+  if (!raw) return '';
+  if (raw.startsWith('+')) return raw;
+
+  // Common case: Indian 10-digit mobile entered without +91
+  const digitsOnly = raw.replace(/\D/g, '');
+  if (digitsOnly.length === 10) return `+91${digitsOnly}`;
+
+  // Fallback: if user typed digits with country code but no plus
+  return `+${digitsOnly}`;
 }
