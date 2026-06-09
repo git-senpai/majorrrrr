@@ -36,7 +36,7 @@ app.post('/api/send-whatsapp', async (req, res) => {
             const formattedNumber = number.startsWith('+') ? number : `+${number}`;
             const fromWhatsApp = whatsappFromNumber.startsWith('whatsapp:') ? whatsappFromNumber : `whatsapp:${whatsappFromNumber}`;
             const toWhatsApp = `whatsapp:${formattedNumber}`;
-            
+
             try {
                 const response = await twilioWhatsAppClient.messages.create({
                     body: message || 'Alert from Crowd System',
@@ -80,8 +80,10 @@ app.post('/api/notify', async (req, res) => {
         console.error('Error sending SMS notify:', err);
         res.status(500).json({ error: 'Failed to send SMS', details: err.message });
     }
+
 });
 
-app.listen(5000, () => {
-    console.log('Server started on port 5000');
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
 });
